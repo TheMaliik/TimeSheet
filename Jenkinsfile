@@ -1,22 +1,16 @@
 pipeline {
     agent any
-
-    tools {
-        jdk 'JAVA_HOME'
-        maven 'MAVEN_HOME'  // Change here from 'M2_HOME' to 'MAVEN_HOME'
-    }
-
     stages {
-        stage('GIT') {
+        stage('Build') {
             steps {
-                git branch: 'master', 
-                    url: 'https://github.com/TheMaliik/TimeSheet.git'
+                sh 'mvn clean install'
             }
         }
-
-        stage('Compile Stage') {
+        stage('SonarQube Analysis') {
             steps {
-                sh 'mvn clean compile'
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn sonar:sonar'
+                }
             }
         }
     }
